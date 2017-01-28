@@ -11,7 +11,7 @@
       var handle = 0;
       var num = 0;
       var lineNum = 0;
-      var gemList = new Array();
+      var gemList;
       
       var renderer = PIXI.autoDetectRenderer(1920, 1080,{backgroundColor : 0x000000});
 document.body.appendChild(renderer.view);
@@ -20,6 +20,7 @@ document.body.appendChild(renderer.view);
 var stage = new PIXI.Container();
       var bg = new PIXI.Container();
       var reelPanel = new PIXI.Container();
+      var controlPanel = new PIXI.Container();
       reelPanel.x = 360;
       reelPanel.y = 190;
       
@@ -32,6 +33,7 @@ var stage = new PIXI.Container();
           
       stage.addChild(bg);
       stage.addChild(reelPanel);
+      stage.addChild(controlPanel);
 
 //Use Pixi's built-in `loader` object to load an image
 PIXI.loader
@@ -42,20 +44,50 @@ PIXI.loader
     "images/3.png",
     "images/4.png",
     "images/5.png",
-    "images/6.png",
-    "images/7.png"
+    "images/6.png"
   ])
   .load(setup);
 
 //This `setup` function will run when the image has loaded
 function setup() {
-    initSymbol();
+    initControlPanel();
+    initReelPanel();
+    
     dropSymbol();
     refresh();
 }
       
+      function initControlPanel(){
+          var spinBtn = PIXI.Sprite.fromImage('images/6.png');
+          
+          spinBtn.x = 1700;
+          spinBtn.y = 950;
+          spinBtn.width = 100;
+          spinBtn.height = 50;
+          spinBtn.interactive = true;
+          spinBtn.buttonMode = true;
+          spinBtn.on('pointerdown',onclickSpin);
+          
+          controlPanel.addChild(spinBtn);
+      }
+      
+      function onclickSpin(){
+          resetSymbol();
+          dropSymbol();
+      }
+      
+      function initReelPanel(){
+          initSymbol();
+      }
+      
       function initSymbol(){
-         for(var i=0;i<5;i++){
+         resetSymbol();
+      }
+      
+      function resetSymbol(){
+          removeAllSymbol();
+          gemList = new Array();
+          for(var i=0;i<5;i++){
              gemList[i] = new Array();
              for(var j=0;j<3;j++){
                  var symbol = new Symbol(Math.floor(Math.random()*7),new Array(i,j),reelPanel);
@@ -66,11 +98,19 @@ function setup() {
          renderer.render(stage);
       }
       
+      function removeAllSymbol(){
+          if(this.gemList == null) return;
+          for(var i=0;i<this.gemList.length;i++){
+              for(var j=0;j<this.gemList[i].length;j++){
+                  this.reelPanel.removeChild(gemList[i][j].getPic());
+              }
+          }
+      }
+      
       function dropSymbol(){
           for(var i=0;i<5;i++){
               for(var j=0;j<3;j++){
                   setTimeout(drop,i*100,gemList,i,j);
-                      //gemList[i][j].dropToPos(gemList[i][j]);
               }
           }
       }
