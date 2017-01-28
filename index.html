@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello World</title>
+</head>
+  <script src="js/pixi.min.js"></script>
+  <script src="js/Symbol.js"></script>
+<body>
+  <script type="text/javascript">
+      var handle = 0;
+      var num = 0;
+      var lineNum = 0;
+      var gemList = new Array();
+      
+      var renderer = PIXI.autoDetectRenderer(1920, 1080,{backgroundColor : 0x000000});
+document.body.appendChild(renderer.view);
+
+// create the root of the scene graph
+var stage = new PIXI.Container();
+      var bg = new PIXI.Container();
+      var reelPanel = new PIXI.Container();
+      reelPanel.x = 360;
+      reelPanel.y = 190;
+      
+      var myMask = new PIXI.Graphics();
+      myMask.beginFill();
+      myMask.drawRect(0,0,1200,700);
+      myMask.endFill();
+      reelPanel.addChild(myMask);
+      reelPanel.mask = myMask;
+          
+      stage.addChild(bg);
+      stage.addChild(reelPanel);
+
+//Use Pixi's built-in `loader` object to load an image
+PIXI.loader
+  .add([
+    "images/0.png",
+    "images/1.png",
+    "images/2.png",
+    "images/3.png",
+    "images/4.png",
+    "images/5.png",
+    "images/6.png",
+    "images/7.png"
+  ])
+  .load(setup);
+
+//This `setup` function will run when the image has loaded
+function setup() {
+    initSymbol();
+    dropSymbol();
+    refresh();
+}
+      
+      function initSymbol(){
+         for(var i=0;i<5;i++){
+             gemList[i] = new Array();
+             for(var j=0;j<3;j++){
+                 var symbol = new Symbol(Math.floor(Math.random()*7),new Array(i,j),reelPanel);
+                 gemList[i].push(symbol);
+                 gemList[i][j].initSymbol();
+             }
+         }
+         renderer.render(stage);
+      }
+      
+      function dropSymbol(){
+          for(var i=0;i<5;i++){
+              for(var j=0;j<3;j++){
+                  setTimeout(drop,i*100,gemList,i,j);
+                      //gemList[i][j].dropToPos(gemList[i][j]);
+              }
+          }
+      }
+                             
+      function drop(gemList,i,j){
+         gemList[i][j].dropToPos(gemList[i][j]);            
+      }
+      
+      function refresh(){
+          renderer.render(stage);
+          setTimeout(refresh,15);
+      }
+  </script>
+</body>
+</html>
