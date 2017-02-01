@@ -44,17 +44,27 @@ function setup() {
 
         stage = new PIXI.Container();
         bg = new PIXI.Container();
+
+        //reelPanel
         reelPanel = new PIXI.Container();
-        controlPanel = new PIXI.Container();
-        reelPanel.x = 360;
-        reelPanel.y = 190;
+        reelPanel.x = gameData.reelPanelPos.x;
+        reelPanel.y = gameData.reelPanelPos.y;
+        reelPanel.width = gameData.reelPanelPos.width;
+        reelPanel.height = gameData.reelPanelPos.height;
       
         myMask = new PIXI.Graphics();
         myMask.beginFill();
-        myMask.drawRect(0,0,1200,700);
+        myMask.drawRect(0,0,gameData.reelPanelPos.width,gameData.reelPanelPos.height);
         myMask.endFill();
         reelPanel.addChild(myMask);
         reelPanel.mask = myMask;
+
+        //controlPanel
+        controlPanel = new PIXI.Container();
+        controlPanel.x = gameData.controlPanelPos.x;
+        controlPanel.y = gameData.controlPanelPos.y;
+        controlPanel.width = gameData.controlPanelPos.width;
+        controlPanel.height = gameData.controlPanelPos.height;
           
         stage.addChild(bg);
         stage.addChild(reelPanel);
@@ -62,16 +72,17 @@ function setup() {
       }
 
       function getInitData(){
-          gameData = jQuery.parseJSON('{"gameResoulation":{"width":1920,"height":1080}}');
+          //gameData = jQuery.parseJSON('{"gameResoulation":{"width":1920,"height":1080},"reelPanelPos":{"x":360,"y":130,"width":1200,"height":700}}');
+          gameData = jQuery.parseJSON('{"gameResoulation":{"width":1920,"height":1080},"reelPanelPos":{"x":610,"y":130,"width":700,"height":700},"controlPanelPos":{"x":0,"y":830,"width":1920,"height":250}}');
       }
       
       function initControlPanel(){
           var spinBtn = PIXI.Sprite.fromImage('images/SYML_07.png');
           
           spinBtn.x = 1700;
-          spinBtn.y = 950;
-          spinBtn.width = 100;
-          spinBtn.height = 50;
+          spinBtn.y = 50;
+          spinBtn.width = 200;
+          spinBtn.height = 150;
           spinBtn.interactive = true;
           spinBtn.buttonMode = true;
           spinBtn.on('pointerdown',onclickSpin);
