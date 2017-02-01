@@ -1,6 +1,6 @@
-function Symbol(symbolID,currentPos,reelPanel) {
-  this.symbolID = symbolID;
-  this.imagePath = "images/" + symbolID.toString() + ".png";
+function Symbol(symbolName,currentPos,reelPanel) {
+  this.symbolName = symbolName;
+  this.imagePath = "images/" + symbolName + ".png";
   this.currentPos = currentPos;
   this.reelPanel = reelPanel;
 }

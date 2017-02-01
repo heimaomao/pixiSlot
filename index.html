@@ -6,59 +6,67 @@
 </head>
   <script src="js/pixi.min.js"></script>
   <script src="js/Symbol.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <body>
   <script type="text/javascript">
-      var handle = 0;
-      var num = 0;
-      var lineNum = 0;
       var gemList;
+      var obj;
       
-      var renderer = PIXI.autoDetectRenderer(1920, 1080,{backgroundColor : 0x000000});
-document.body.appendChild(renderer.view);
-
-// create the root of the scene graph
-var stage = new PIXI.Container();
-      var bg = new PIXI.Container();
-      var reelPanel = new PIXI.Container();
-      var controlPanel = new PIXI.Container();
-      reelPanel.x = 360;
-      reelPanel.y = 190;
       
-      var myMask = new PIXI.Graphics();
-      myMask.beginFill();
-      myMask.drawRect(0,0,1200,700);
-      myMask.endFill();
-      reelPanel.addChild(myMask);
-      reelPanel.mask = myMask;
-          
-      stage.addChild(bg);
-      stage.addChild(reelPanel);
-      stage.addChild(controlPanel);
 
 //Use Pixi's built-in `loader` object to load an image
 PIXI.loader
   .add([
-    "images/0.png",
-    "images/1.png",
-    "images/2.png",
-    "images/3.png",
-    "images/4.png",
-    "images/5.png",
-    "images/6.png"
+    "images/SYML_01.png",
+    "images/SYML_02.png",
+    "images/SYML_03.png",
+    "images/SYML_04.png",
+    "images/SYML_05.png",
+    "images/SYML_06.png",
+    "images/SYML_07.png"
   ])
   .load(setup);
 
 //This `setup` function will run when the image has loaded
 function setup() {
+    initContainer();
     initControlPanel();
     initReelPanel();
     
     dropSymbol();
     refresh();
 }
+
+      function initContainer(){
+        getInitData();
+        renderer = PIXI.autoDetectRenderer(gameData.gameResoulation.width,gameData.gameResoulation.height,{backgroundColor : 0x000000});
+        document.body.appendChild(renderer.view);
+
+        stage = new PIXI.Container();
+        bg = new PIXI.Container();
+        reelPanel = new PIXI.Container();
+        controlPanel = new PIXI.Container();
+        reelPanel.x = 360;
+        reelPanel.y = 190;
+      
+        myMask = new PIXI.Graphics();
+        myMask.beginFill();
+        myMask.drawRect(0,0,1200,700);
+        myMask.endFill();
+        reelPanel.addChild(myMask);
+        reelPanel.mask = myMask;
+          
+        stage.addChild(bg);
+        stage.addChild(reelPanel);
+        stage.addChild(controlPanel);
+      }
+
+      function getInitData(){
+          gameData = jQuery.parseJSON('{"gameResoulation":{"width":1920,"height":1080}}');
+      }
       
       function initControlPanel(){
-          var spinBtn = PIXI.Sprite.fromImage('images/6.png');
+          var spinBtn = PIXI.Sprite.fromImage('images/SYML_07.png');
           
           spinBtn.x = 1700;
           spinBtn.y = 950;
@@ -81,16 +89,21 @@ function setup() {
       }
       
       function initSymbol(){
+         getSymbolData();
          resetSymbol();
+      }
+
+      function getSymbolData(){
+          obj = jQuery.parseJSON('{"reels":[{"reel":["SYML_03","SYML_01","SYML_03"]},{"reel":["SYML_01","SYML_03","SYML_01"]},{"reel":["SYML_01","SYML_01","SYML_01"]}],"wins":[{"win":{"symbolsOnPayLines":{"payline":[0,0,0],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[1,1,1],"symbols":"SYML_01:SYML_03:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[2,2,2],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}}]}');
       }
       
       function resetSymbol(){
           removeAllSymbol();
           gemList = new Array();
-          for(var i=0;i<5;i++){
+          for(var i=0;i<obj.reels.length;i++){
              gemList[i] = new Array();
-             for(var j=0;j<3;j++){
-                 var symbol = new Symbol(Math.floor(Math.random()*7),new Array(i,j),reelPanel);
+             for(var j=0;j<obj.reels[i].reel.length;j++){
+                 var symbol = new Symbol(obj.reels[i].reel[j],new Array(i,j),reelPanel);
                  gemList[i].push(symbol);
                  gemList[i][j].initSymbol();
              }
@@ -108,8 +121,8 @@ function setup() {
       }
       
       function dropSymbol(){
-          for(var i=0;i<5;i++){
-              for(var j=0;j<3;j++){
+          for(var i=0;i<obj.reels.length;i++){
+              for(var j=0;j<obj.reels[i].reel.length;j++){
                   setTimeout(drop,i*100,gemList,i,j);
               }
           }
