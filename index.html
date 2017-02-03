@@ -33,7 +33,6 @@ function setup() {
     initControlPanel();
     initReelPanel();
     
-    dropSymbol();
     refresh();
 }
 
@@ -91,21 +90,26 @@ function setup() {
       }
       
       function onclickSpin(){
-          resetSymbol();
-          dropSymbol();
+          getSymbolData();
       }
       
       function initReelPanel(){
-          initSymbol();
-      }
-      
-      function initSymbol(){
-         getSymbolData();
-         resetSymbol();
+
       }
 
       function getSymbolData(){
-          obj = jQuery.parseJSON('{"reels":[{"reel":["SYML_03","SYML_01","SYML_03"]},{"reel":["SYML_01","SYML_03","SYML_01"]},{"reel":["SYML_01","SYML_01","SYML_01"]}],"wins":[{"win":{"symbolsOnPayLines":{"payline":[0,0,0],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[1,1,1],"symbols":"SYML_01:SYML_03:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[2,2,2],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}}]}');
+          $.ajax({
+            url: "https://spacegems.herokuapp.com/slot/spin",
+          }).done(function(data) {
+            obj = data;
+            startSpin();
+          });
+          //obj = jQuery.parseJSON('{"reels":[{"reel":["SYML_03","SYML_01","SYML_03"]},{"reel":["SYML_01","SYML_03","SYML_01"]},{"reel":["SYML_01","SYML_01","SYML_01"]}],"wins":[{"win":{"symbolsOnPayLines":{"payline":[0,0,0],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[1,1,1],"symbols":"SYML_01:SYML_03:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[2,2,2],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}}]}');
+      }
+
+      function startSpin(){
+          resetSymbol();
+          dropSymbol();
       }
       
       function resetSymbol(){
