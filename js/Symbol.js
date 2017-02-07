@@ -19,11 +19,23 @@ Symbol.prototype.getPic = function(){
 
 Symbol.prototype.dropToPos = function(symbol){
     if(symbol.pic.y == symbol.currentPos[1] *250){
-        
+        dropFinished();
     }else{
         symbol.pic.y += 35;
         setTimeout(Symbol.prototype.dropToPos,15,symbol);
     }
+}
+
+Symbol.prototype.lighting = function(symbol,times = 0){
+  if(times === 6) {actionFinished();return;}
+  console.log(times);
+  symbol.pic.visible = !symbol.pic.visible;
+  setTimeout(Symbol.prototype.lighting,400,symbol,++times);
+}
+
+Symbol.prototype.addToActionList = function(symbol,callBackFunctionName){
+  symbol.nextFunctionName = callBackFunctionName;
+  actionList++;
 }
 
 Symbol.prototype.printName = function () {

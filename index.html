@@ -11,6 +11,9 @@
   <script type="text/javascript">
       var gemList;
       var obj;
+      var dropReadyNum = 0;
+      var doRefresh = true;
+      var actionList = 0;
       
       
 
@@ -102,9 +105,16 @@ function setup() {
             url: "https://spacegems.herokuapp.com/slot/spin",
           }).done(function(data) {
             obj = data;
+            console.log(obj);
             startSpin();
           });
-          //obj = jQuery.parseJSON('{"reels":[{"reel":["SYML_03","SYML_01","SYML_03"]},{"reel":["SYML_01","SYML_03","SYML_01"]},{"reel":["SYML_01","SYML_01","SYML_01"]}],"wins":[{"win":{"symbolsOnPayLines":{"payline":[0,0,0],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[1,1,1],"symbols":"SYML_01:SYML_03:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},{"win":{"symbolsOnPayLines":{"payline":[2,2,2],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}}]}');
+          /*obj = jQuery.parseJSON('{"reels":[{"reel":["SYML_03","SYML_01","SYML_03"]},{"reel":["SYML_01","SYML_03","SYML_01"]},{"reel":["SYML_01","SYML_01","SYML_01"]}],
+          "wins":[
+          {"win":{"symbolsOnPayLines":{"payline":[0,0,0],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},
+          {"win":{"symbolsOnPayLines":{"payline":[1,1,1],"symbols":"SYML_01:SYML_03:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},
+          {"win":{"symbolsOnPayLines":{"payline":[2,2,2],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}}]
+          }');
+          */
       }
 
       function startSpin(){
@@ -113,6 +123,8 @@ function setup() {
       }
       
       function resetSymbol(){
+          openRefresh();
+
           removeAllSymbol();
           gemList = new Array();
           for(var i=0;i<obj.reels.length;i++){
@@ -144,12 +156,58 @@ function setup() {
       }
                              
       function drop(gemList,i,j){
-         gemList[i][j].dropToPos(gemList[i][j]);            
+         gemList[i][j].dropToPos(gemList[i][j]);
+         gemList[i][j].addToActionList(gemList[i][j], 'playWinAnimation');
+      }
+
+      
+      function dropFinished(){
+          dropReadyNum++;
+          if(dropReadyNum === 9){
+              playWinAnimation();
+          }
       }
       
       function refresh(){
+          if(doRefresh === false) return;
+
           renderer.render(stage);
           setTimeout(refresh,15);
+      }
+
+      function closeRefresh(){
+          doRefresh = false;
+      }
+
+      function openRefresh(){
+          doRefresh = true;
+          refresh();
+      }
+
+      function actionFinished(callbackFunctionName){
+          actionList--;
+          if(actionList <= 0){
+              window["callbackFunctionName"]();
+          }
+      }
+
+      function playWinAnimation(){
+          //closeRefresh();
+          dropReadyNum=0;
+          if(obj.wins!= null){
+              for(var i=0;i<obj.wins.length;i++){
+                  setTimeout(playWinAnimationPerLine, 2500*i, i);
+                }
+                setTimeout(closeRefresh,2500*obj.wins.length);
+            }else{
+                closeRefresh();
+            }
+      }
+
+      function playWinAnimationPerLine(lineNum){
+        for(var j=0;j<obj.wins[lineNum].on.payline.length;j++){
+            gemList[j][obj.wins[lineNum].on.payline[j]].lighting(gemList[j][obj.wins[lineNum].on.payline[j]]);
+        }
       }
   </script>
 </body>
