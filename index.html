@@ -14,6 +14,10 @@
       var dropReadyNum = 0;
       var doRefresh = true;
       var actionList = 0;
+      var lastScaleX = 1;
+      var lastScaleY = 1;
+
+      //file:///F:/HTML5Project/pixiSlot/index.html
       
       
 
@@ -36,8 +40,24 @@ function setup() {
     initControlPanel();
     initReelPanel();
     
-    refresh();
+    refreshOnce();
 }
+
+//window.onresize = scaleContainerfunction(event);
+window.onresize = function(event){
+    widthpercentage = 1/(gameData.gameResoulation.width/window.innerWidth);
+    heightpercentage = 1/(gameData.gameResoulation.height/window.innerHeight);
+
+    stage.scale.x = 1/lastScaleX;
+    stage.scale.y = 1/lastScaleY;
+    stage.scale.x = widthpercentage;
+    stage.scale.y = heightpercentage;
+
+    lastScaleX = widthpercentage;
+    lastScaleY = heightpercentage;
+
+    renderer.resize(window.innerWidth,window.innerHeight);
+    refreshOnce();};
 
       function initContainer(){
         getInitData();
@@ -74,7 +94,7 @@ function setup() {
       }
 
       function getInitData(){
-          //gameData = jQuery.parseJSON('{"gameResoulation":{"width":1920,"height":1080},"reelPanelPos":{"x":360,"y":130,"width":1200,"height":700}}');
+          //gameData = jQuery.parseJSON('{"gameResoulation":{"width":800,"height":600},"reelPanelPos":{"x":610,"y":130,"width":700,"height":700},"controlPanelPos":{"x":0,"y":830,"width":1920,"height":250}}');
           gameData = jQuery.parseJSON('{"gameResoulation":{"width":1920,"height":1080},"reelPanelPos":{"x":610,"y":130,"width":700,"height":700},"controlPanelPos":{"x":0,"y":830,"width":1920,"height":250}}');
       }
       
@@ -108,13 +128,6 @@ function setup() {
             console.log(obj);
             startSpin();
           });
-          /*obj = jQuery.parseJSON('{"reels":[{"reel":["SYML_03","SYML_01","SYML_03"]},{"reel":["SYML_01","SYML_03","SYML_01"]},{"reel":["SYML_01","SYML_01","SYML_01"]}],
-          "wins":[
-          {"win":{"symbolsOnPayLines":{"payline":[0,0,0],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},
-          {"win":{"symbolsOnPayLines":{"payline":[1,1,1],"symbols":"SYML_01:SYML_03:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}},
-          {"win":{"symbolsOnPayLines":{"payline":[2,2,2],"symbols":"SYML_03:SYML_01:SYML_01"},"IsWin":{"matchingResult":null},"payOut":null}}]
-          }');
-          */
       }
 
       function startSpin(){
@@ -168,11 +181,15 @@ function setup() {
           }
       }
       
-      function refresh(){
+      function refreshOnce(){
+          renderer.render(stage);
+      }
+
+      function AutoRefresh(){
           if(doRefresh === false) return;
 
           renderer.render(stage);
-          setTimeout(refresh,15);
+          setTimeout(AutoRefresh,15);
       }
 
       function closeRefresh(){
@@ -181,7 +198,7 @@ function setup() {
 
       function openRefresh(){
           doRefresh = true;
-          refresh();
+          AutoRefresh();
       }
 
       function actionFinished(callbackFunctionName){
@@ -192,7 +209,6 @@ function setup() {
       }
 
       function playWinAnimation(){
-          //closeRefresh();
           dropReadyNum=0;
           if(obj.wins!= null){
               for(var i=0;i<obj.wins.length;i++){

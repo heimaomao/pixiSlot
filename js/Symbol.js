@@ -28,7 +28,6 @@ Symbol.prototype.dropToPos = function(symbol){
 
 Symbol.prototype.lighting = function(symbol,times = 0){
   if(times === 6) {actionFinished();return;}
-  console.log(times);
   symbol.pic.visible = !symbol.pic.visible;
   setTimeout(Symbol.prototype.lighting,400,symbol,++times);
 }
